@@ -83,6 +83,27 @@ print("QUBO problem solved. Lowest energy found:", sampleset.first.energy)
 # From here, one can reconstruct the unwrapped phase.
 ```
 
+### Command-Line Interface (CLI)
+
+For non-programmatic use, `QuantumSAR` can be run directly from the command line. This is useful for integrating into shell scripts or processing single files quickly.
+
+**Syntax:**
+```bash
+python -m quantum_sar -i <input_file.tif> -o <output_file.tif> [options]
+```
+
+**Example:**
+```bash
+# Unwrap an image using the robust model with 4 bits
+python -m quantum_sar -i sample_wrapped.tif -o my_result.tif --method robust --bits 4
+```
+
+**Options:**
+*   `-i, --input`: Path to the input wrapped phase GeoTIFF file (required).
+*   `-o, --output`: Path to save the output unwrapped GeoTIFF file (required).
+*   `--method`: QUBO formulation to use (`l2` or `robust`, default: `robust`).
+*   `-b, --bits`: Number of bits for integer encoding (default: 3).
+    
 ### Reproducing Paper Results
 
 To generate all figures and data from our associated paper, run the master experiment script.
