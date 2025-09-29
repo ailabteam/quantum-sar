@@ -1,39 +1,31 @@
-# QuantumSAR: A QUBO Framework for InSAR Phase Unwrapping
+# QuantumSAR: A Python Toolkit for QUBO-based InSAR Phase Unwrapping
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Pytest](https://github.com/ailabteam/quantum-sar/actions/workflows/pytest.yml/badge.svg)](https://github.com/ailabteam/quantum-sar/actions/workflows/pytest.yml)
+[![JOSS submission](https://joss.theoj.org/papers/10.21105/joss.xxxxx/status.svg)](https://joss.theoj.org/papers/10.21105/joss.xxxxx)
 
-**QuantumSAR** is an open-source research toolkit for exploring the application of quantum and quantum-inspired optimization algorithms to Synthetic Aperture Radar (SAR) and Interferometric SAR (InSAR) data processing challenges.
+**QuantumSAR** is an open-source research toolkit for exploring the application of quantum and quantum-inspired optimization algorithms to Synthetic Aperture Radar (SAR) and Interferometric SAR (InSAR) data processing challenges. This initial version focuses on formulating the classic **InSAR Phase Unwrapping** problem as a **Quadratic Unconstrained Binary Optimization (QUBO)** model, making it solvable by quantum annealers and modern classical heuristic solvers.
 
-This initial version focuses on formulating the classic **InSAR Phase Unwrapping** problem as a **Quadratic Unconstrained Binary Optimization (QUBO)** model, making it solvable by quantum annealers and modern classical heuristic solvers.
+This repository contains the Python library and experimental scripts to reproduce the findings of our research. Our primary goal is to provide a foundational bridge between the remote sensing and quantum computing communities, enabling new avenues of research into quantum-assisted geoscience.
 
-This repository contains the Python library and experimental scripts associated with our upcoming preprint paper. Our primary goal is to provide a foundational bridge between the remote sensing and quantum computing communities.
+## 📖 Statement of Need
 
-## 📖 The Scientific Story
+Interferometric SAR (InSAR) is a powerful technique for measuring ground deformation, but it relies on solving a challenging NP-hard problem known as phase unwrapping. While classical algorithms are well-established, exploring novel computational paradigms like quantum computing is essential for tackling future large-scale, noise-intensive datasets.
 
-Interferometric SAR (InSAR) is a powerful remote sensing technique for measuring ground deformation, but it relies on solving a challenging inverse problem known as phase unwrapping. Traditionally, this is tackled with classical algorithms. We asked the question: *Can we formulate this problem in a language that quantum computers can understand?*
+`QuantumSAR` directly addresses a key barrier to this exploration: the lack of domain-specific tools to translate the phase unwrapping problem into the native language of quantum annealers (QUBO). It provides researchers with a high-level API to construct and experiment with QUBO models, lowering the barrier to entry for the remote sensing community to engage with quantum computing.
 
-This project documents our journey:
-1.  **Formulation:** We successfully mapped the phase unwrapping problem, which seeks to minimize phase differences between adjacent pixels, into a QUBO model.
-2.  **Enhancement:** We developed and tested multiple encoding schemes, including a multi-bit representation to handle large phase jumps and a "Robust" formulation designed to mitigate the effects of noise.
-3.  **Analysis:** Through a series of rigorous, statistically-validated experiments on synthetic data, we analyzed the performance of our QUBO models under various conditions (surface slope, noise levels) and compared them against a standard classical algorithm.
+## 🚀 Key Features
 
-Our key finding is that while formulating phase unwrapping as a QUBO is feasible, achieving the accuracy of highly-optimized classical algorithms remains a significant challenge on classical simulators. This highlights the inherent complexity of the problem and underscores the potential need for real quantum hardware to unlock performance advantages.
+*   **QUBO Builders**: Functions to automatically construct QUBO matrices from wrapped phase data.
+    *   `build_qubo_matrix_multibit`: A standard L2-norm formulation using multi-bit encoding to represent a wide range of integer phase jumps.
+    *   `build_qubo_matrix_robust`: An enhanced formulation designed to be more resilient to noise by clipping the influence of anomalous phase differences.
+*   **Reproducibility**: A master script (`examples/generate_paper_assets.py`) to reproduce all key figures and statistical analyses from our paper.
+*   **Testing**: A suite of `pytest` tests to ensure the correctness and reliability of the core library functions.
 
-**The core contribution of this work is not to beat classical methods today, but to provide the foundational model and open-source tools for the quantum-ready SAR processing of tomorrow.**
+## 🛠️ Installation
 
-## 🚀 Features
-
-*   **QUBO Builders:** Python functions to automatically construct QUBO matrices from wrapped phase data.
-    *   `build_qubo_matrix`: A simple 1-bit model.
-    *   `build_qubo_matrix_multibit`: An advanced multi-bit model with offset to represent positive and negative integer phase jumps.
-    *   `build_qubo_matrix_robust`: A variation of the multi-bit model designed for better noise resilience.
-*   **Experiment Scripts:** A suite of modular scripts in the `examples/` directory to reproduce all the results from our study.
-*   **Modular Design:** The `quantum_sar` library is designed to be extensible for future research into other SAR/InSAR optimization problems.
-
-## 🛠️ Installation and Setup
-
-This project is managed with `conda`.
+We recommend using `conda` to manage the environment.
 
 1.  **Clone the repository:**
     ```bash
@@ -42,84 +34,50 @@ This project is managed with `conda`.
     ```
 
 2.  **Create and activate the conda environment:**
-    We recommend Python 3.11.
     ```bash
     conda create --name quantumsar python=3.11 -y
     conda activate quantumsar
     ```
 
-3.  **Install required packages:**
-    The core dependencies are managed in `requirements.txt`.
+3.  **Install the package and its dependencies:**
+    This project is structured as an installable Python package. Use the following command to install it in "editable" mode, which means any changes you make to the source code will be immediately effective.
     ```bash
-    pip install -r requirements.txt
+    pip install -e .
     ```
-    *(Note: You will need to create a `requirements.txt` file. See section below.)*
+    This command reads the `setup.py` and `requirements.txt` files to install everything needed.
 
-### Creating the `requirements.txt` file
+## ⚡ Usage
 
-Run the following command in your activated `quantumsar` environment to generate the file:
+### Quick Start: Basic Usage
 
-```bash
-pip freeze > requirements.txt
-```
-The file will contain libraries such as `numpy`, `matplotlib`, `pandas`, `scikit-image`, `dwave-neal`, `seaborn`, `tqdm`, etc.
+Here is a minimal example of how to use `QuantumSAR` to build a QUBO matrix for a simple interferogram and solve it using a classical sampler.
 
-## ⚡ Running the Experiments
+```python
+import numpy as np
+from neal import SimulatedAnnealingSampler
+from quantum_sar.qubo_builder import build_qubo_matrix_robust
 
-All experiments are designed to be run as modules from the root directory of the project.
+# 1. Create a sample 10x10 wrapped phase image with some noise
+size = 10
+x, y = np.ogrid[:size, :size]
+ground_truth = (x - size/2)**2 + (y - size/2)**2
+noise = np.random.normal(0, 0.2, (size, size))
+wrapped_phase = np.angle(np.exp(1j * (ground_truth + noise)))
 
-### Main Experiment: Noise Robustness Analysis
+# 2. Build the robust QUBO model using 3 bits per variable
+num_bits = 3
+offset = 4  # Allows k to range from -4 to 3
+qubo_matrix = build_qubo_matrix_robust(
+    wrapped_phase,
+    num_bits=num_bits,
+    offset=offset
+)
 
-This is the main experiment that generates the key results for our paper. It performs a statistical analysis by running multiple trials across a range of noise levels.
+# 3. Solve the QUBO problem using a classical sampler
+sampler = SimulatedAnnealingSampler()
+sampleset = sampler.sample_qubo(qubo_matrix, num_reads=10)
+solution = sampleset.first.sample
 
-**Warning:** This script can take a significant amount of time to run (30 minutes to several hours depending on your machine).
-
-```bash
-python -m examples.generate_paper_assets
-```
-
-After execution, all figures and data tables will be saved in the `results/paper_assets/` directory. The most important output is:
-
-*   `Figure_3_Noise_Sweep_Plot.png`: The plot showing the performance (MSE) of each method vs. noise level.
-
-### Other Experiments
-
-You can also run earlier, simpler experiments:
-
-*   **Classical Baseline:**
-    ```bash
-    python -m examples.01_classical_baseline
-    ```
-*   **Robustness Comparison (Single Run):**
-    ```bash
-    python -m examples.05_robust_experiment
-    ```
-
-## 📂 Repository Structure
-
-```
-├── quantum_sar/          # The core Python library
-│   ├── __init__.py
-│   └── qubo_builder.py   # Functions to build QUBO matrices
-├── examples/             # Experimental scripts
-│   ├── 01_classical_baseline.py
-│   ├── ...
-│   └── generate_paper_assets.py # Main script for paper results
-├── results/              # Output directory (ignored by git)
-│   └── paper_assets/     # Final figures and tables for publication
-├── .gitignore
-├── LICENSE
-└── README.md
-```
-
-## 🤝 Contributing
-
-We welcome contributions and collaborations! If you have ideas for new QUBO formulations, applications to other SAR problems, or improvements to the existing framework, please feel free to open an issue or submit a pull request.
-
-## 📜 Citation
-
-If you use this code or the concepts from our research in your work, please cite our upcoming preprint (link will be added here once available).
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+print("QUBO problem solved. Lowest energy found:", sampleset.first.energy)
+# The `solution` dictionary now contains the optimal binary variable assignments.
+# From here, one can reconstruct the unwrapped phase.
