@@ -1,4 +1,4 @@
-echo "# Contributing to QuantumSAR
+# Contributing to QuantumSAR
 
 We welcome contributions to the QuantumSAR project! If you have ideas for improvements, new features, or bug fixes, please follow these steps:
 
@@ -8,4 +8,4 @@ We welcome contributions to the QuantumSAR project! If you have ideas for improv
 4.  **Write Tests:** If you are adding a new feature, please include corresponding tests in the \`tests/\` directory.
 5.  **Submit a Pull Request:** Once your changes are ready, submit a pull request to the \`main\` branch of the original repository.
 
-Thank you for your interest in improving QuantumSAR!" > CONTRIBUTING.md
+Thank you for your interest in improving QuantumSAR!"
