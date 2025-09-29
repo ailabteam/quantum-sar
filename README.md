@@ -81,3 +81,70 @@ solution = sampleset.first.sample
 print("QUBO problem solved. Lowest energy found:", sampleset.first.energy)
 # The `solution` dictionary now contains the optimal binary variable assignments.
 # From here, one can reconstruct the unwrapped phase.
+```
+
+### Reproducing Paper Results
+
+To generate all figures and data from our associated paper, run the master experiment script.
+
+**Warning:** This script is computationally intensive and may run for a long time.
+
+```bash
+python -m examples.generate_paper_assets
+```
+All outputs will be saved to the `results/paper_assets/` directory.
+
+## ✅ Running Tests
+
+To verify that the core functions are working correctly, you can run the automated tests using `pytest`.
+
+```bash
+pytest
+```
+
+## 📂 Repository Structure
+
+```
+├── quantum_sar/          # The core Python library
+│   └── qubo_builder.py   # Main functions to build QUBOs
+├── examples/             #
+│   └── generate_paper_assets.py # Master script for paper results
+├── tests/                # Automated tests for the library
+│   └── test_qubo_builder.py
+├── results/              # Output directory (ignored by git)
+├── joss_paper/           # Source for the JOSS publication
+├── .gitignore
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── setup.py
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](CONTRIBUTING.md) for details on how to open issues, fork the repository, and submit pull requests.
+
+## 📜 Citation
+
+If you use `QuantumSAR` in your research, please cite our paper published in the Journal of Open Source Software (JOSS).
+
+*(Note: The citation details and DOI will be added here upon publication.)*
+
+```bibtex
+@article{Do_QuantumSAR_2025,
+    doi = {10.21105/joss.xxxxx},
+    url = {https://doi.org/10.21105/joss.xxxxx},
+    year = {2025},
+    publisher = {The Open Journal},
+    volume = {x},
+    number = {xx},
+    pages = {xxxxx},
+    author = {Phuc Hao Do},
+    title = {QuantumSAR: A Python Toolkit for QUBO-based InSAR Phase Unwrapping},
+    journal = {Journal of Open Source Software}
+}
+```
+
+## 📝 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
