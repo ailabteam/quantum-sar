@@ -1,4 +1,57 @@
 import numpy as np
+# Dán hàm này vào file quantum_sar/qubo_builder.py
+
+import numpy as np # Đảm bảo có import numpy ở đầu file
+
+def build_qubo_matrix_robust(wrapped_phase_image, num_bits=2, offset=0):
+    """
+    Xây dựng ma trận Q sử dụng phương pháp Robust L2-norm.
+    
+    "C_ij" được giới hạn trong khoảng [-1, 1] để giảm ảnh hưởng của nhiễu.
+    """
+    height, width = wrapped_phase_image.shape
+    num_pixels = height * width
+    Q = {}
+
+    def to_qubo_idx(pixel_idx, bit_idx):
+        return pixel_idx * num_bits + bit_idx
+    def to_pixel_idx(r, c):
+        return r * width + c
+
+    for r in range(height):
+        for c in range(width):
+            neighbors = []
+            if c + 1 < width: neighbors.append((r, c + 1))
+            if r + 1 < height: neighbors.append((r + 1, c))
+            
+            for r_n, c_n in neighbors:
+                i = to_pixel_idx(r, c)
+                j = to_pixel_idx(r_n, c_n)
+                
+                delta_phase = wrapped_phase_image[r, c] - wrapped_phase_image[r_n, c_n]
+                C_ij = np.round(delta_phase / (2 * np.pi))
+                
+                # === ĐÂY LÀ CẢI TIẾN DUY NHẤT ===
+                C_ij_robust = np.clip(C_ij, -1, 1)
+                # ==================================
+                
+                # Công thức QUBO vẫn như cũ, chỉ thay C_ij bằng C_ij_robust
+                for p in range(num_bits):
+                    for q in range(num_bits):
+                        idx_ip, idx_iq = to_qubo_idx(i, p), to_qubo_idx(i, q)
+                        idx_jp, idx_jq = to_qubo_idx(j, p), to_qubo_idx(j, q)
+                        
+                        Q[(idx_ip, idx_iq)] = Q.get((idx_ip, idx_iq), 0) + (2**p * 2**q)
+                        Q[(idx_jp, idx_jq)] = Q.get((idx_jp, idx_jq), 0) + (2**p * 2**q)
+                        Q[(idx_ip, idx_jq)] = Q.get((idx_ip, idx_jq), 0) - 2 * (2**p * 2**q)
+
+                for p in range(num_bits):
+                    idx_ip = to_qubo_idx(i, p)
+                    idx_jp = to_qubo_idx(j, p)
+                    Q[(idx_ip, idx_ip)] = Q.get((idx_ip, idx_ip), 0) + 2 * C_ij_robust * (2**p)
+                    Q[(idx_jp, idx_jp)] = Q.get((idx_jp, idx_jp), 0) - 2 * C_ij_robust * (2**p)
+    return Q
+
 
 def build_qubo_matrix(wrapped_phase_image):
     """
