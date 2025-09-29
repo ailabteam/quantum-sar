@@ -22,3 +22,6 @@ data/
 
 # Archive for old scripts
 examples/archive/
+
+# Sample data and test outputs
+*.tif

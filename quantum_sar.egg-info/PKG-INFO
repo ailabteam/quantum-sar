@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: quantum_sar
+Version: 0.1.0
+Summary: A QUBO Framework for InSAR Phase Unwrapping
+Author: Phuc Hao Do
+Author-email: do.hf@sut.ru
+Requires-Python: >=3.8
+Dynamic: author
+Dynamic: author-email
+Dynamic: requires-python
+Dynamic: summary
