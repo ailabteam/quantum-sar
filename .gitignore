@@ -19,3 +19,6 @@ data/
 .idea/
 
 " > .gitignore
+
+# Archive for old scripts
+examples/archive/
